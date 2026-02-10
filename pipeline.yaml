@@ -1,0 +1,42 @@
+trigger:
+- main
+
+pool:
+  name: 'default'
+
+variables:
+  serviceConnection: bicep
+  resourceGroup: rg-monitoring
+  location: centralindia
+  bicepFile: bicep/actionRule.bicep
+  paramFile: bicep/BHF_CIR_UAT.bicepparam
+
+steps:
+- checkout: self
+  clean: true
+
+- task: AzureCLI@2
+  displayName: Create Resource Group
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az group create \
+        --name $(resourceGroup) \
+        --location $(location)
+
+- task: AzureCLI@2
+  displayName: Deploy Action Rule via Bicep Param File
+  inputs:
+    azureSubscription: $(serviceConnection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      set -e
+      cd $(Build.SourcesDirectory)
+
+      az deployment group create \
+        --resource-group $(resourceGroup) \
+        --template-file $(bicepFile) \
+        --parameters $(paramFile)
