@@ -9,7 +9,7 @@ variables:
   resourceGroup: rg-monitoring
   location: centralindia
   bicepFile: bicep/actionRule.bicep
-  paramFile: bicep/BHF_CIR_UAT.bicepparam
+  paramFile: bicep/alert-processing-rule.bicepparam
 
 steps:
 - checkout: self
@@ -40,3 +40,4 @@ steps:
         --resource-group $(resourceGroup) \
         --template-file $(bicepFile) \
         --parameters $(paramFile)
+
